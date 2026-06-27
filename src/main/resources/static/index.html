@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽车租赁系统</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="page">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">Car Rental Demo</p>
+            <h1>汽车租赁系统</h1>
+            <p class="hero-text">一个精简的 Spring Boot + JPA 示例页面，直接调用现有 REST 接口。</p>
+        </div>
+        <button id="refreshAllButton" class="secondary-button" type="button">刷新全部数据</button>
+    </header>
+
+    <section class="stats" id="stats">
+        <article class="stat-card">
+            <span>客户</span>
+            <strong id="customerCount">0</strong>
+        </article>
+        <article class="stat-card">
+            <span>车辆</span>
+            <strong id="carCount">0</strong>
+        </article>
+        <article class="stat-card">
+            <span>租赁</span>
+            <strong id="rentalCount">0</strong>
+        </article>
+        <article class="stat-card">
+            <span>支付</span>
+            <strong id="paymentCount">0</strong>
+        </article>
+    </section>
+
+    <main class="grid">
+        <section class="panel">
+            <div class="panel-header">
+                <h2>客户</h2>
+                <button class="ghost-button" type="button" data-load="customers">刷新</button>
+            </div>
+            <form id="customerForm" class="form-grid">
+                <input name="name" placeholder="姓名" required>
+                <input name="phone" placeholder="电话" required>
+                <input name="email" type="email" placeholder="邮箱" required>
+                <input name="licenseNumber" placeholder="驾驶证号" required>
+                <button type="submit">新增客户</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>邮箱</th>
+                        <th>驾驶证号</th>
+                    </tr>
+                    </thead>
+                    <tbody id="customerTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>车辆</h2>
+                <button class="ghost-button" type="button" data-load="cars">刷新</button>
+            </div>
+            <form id="carForm" class="form-grid">
+                <input name="plateNumber" placeholder="车牌号" required>
+                <input name="brand" placeholder="品牌" required>
+                <input name="model" placeholder="型号" required>
+                <input name="color" placeholder="颜色" required>
+                <input name="year" type="number" placeholder="年份" min="1886" max="3000" required>
+                <select name="status" required>
+                    <option value="AVAILABLE">AVAILABLE</option>
+                    <option value="RENTED">RENTED</option>
+                    <option value="MAINTENANCE">MAINTENANCE</option>
+                </select>
+                <input name="dailyRate" type="number" step="0.01" min="0.01" placeholder="日租金" required>
+                <button type="submit">新增车辆</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>车牌号</th>
+                        <th>品牌型号</th>
+                        <th>状态</th>
+                        <th>日租金</th>
+                    </tr>
+                    </thead>
+                    <tbody id="carTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>租赁</h2>
+                <button class="ghost-button" type="button" data-load="rentals">刷新</button>
+            </div>
+            <form id="rentalForm" class="form-grid">
+                <input name="customerId" type="number" min="1" placeholder="客户ID" required>
+                <input name="carId" type="number" min="1" placeholder="车辆ID" required>
+                <input name="rentalDate" type="date" required>
+                <input name="returnDate" type="date" required>
+                <input name="actualReturnDate" type="date">
+                <input name="totalAmount" type="number" step="0.01" min="0" placeholder="总金额" required>
+                <select name="status" required>
+                    <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
+                    <option value="RENTING">RENTING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="CANCELED">CANCELED</option>
+                </select>
+                <button type="submit">新增租赁</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>客户/车辆</th>
+                        <th>租期</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody id="rentalTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>支付</h2>
+                <button class="ghost-button" type="button" data-load="payments">刷新</button>
+            </div>
+            <form id="paymentForm" class="form-grid">
+                <input name="rentalId" type="number" min="1" placeholder="租赁ID" required>
+                <input name="paymentDate" type="date" required>
+                <input name="amount" type="number" step="0.01" min="0.01" placeholder="支付金额" required>
+                <select name="paymentMethod" required>
+                    <option value="WECHAT">WECHAT</option>
+                    <option value="ALIPAY">ALIPAY</option>
+                    <option value="BANK_CARD">BANK_CARD</option>
+                    <option value="CASH">CASH</option>
+                </select>
+                <button type="submit">新增支付</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>租赁ID</th>
+                        <th>日期</th>
+                        <th>金额</th>
+                        <th>方式</th>
+                    </tr>
+                    </thead>
+                    <tbody id="paymentTable"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <section class="message-panel">
+        <h2>运行说明</h2>
+        <ul>
+            <li>启动项目后访问 <code>http://localhost:8080/</code>。</li>
+            <li>页面所有数据都来自现有接口：<code>/api/customers</code>、<code>/api/cars</code>、<code>/api/rentals</code>、<code>/api/payments</code>。</li>
+            <li>状态与支付方式表单使用英文枚举名，数据库内部仍会保存为中文值。</li>
+        </ul>
+    </section>
+
+    <div id="messageBox" class="message-box hidden"></div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
